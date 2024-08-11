@@ -1,0 +1,12 @@
+{
+  "always_run_in_app" : false,
+  "icon" : {
+    "color" : "deep-blue",
+    "glyph" : "magic"
+  },
+  "name" : "Air Quality",
+  "script" : "\/**\n* simple widget to fetch and\n* visualise the quality of the air \n* on a specific location.\n* (c) Raffaele De Lorenzo\n*\/\n\nconst airqualityWidget = new ListWidget();\nairqualityWidget.backgroundColor = new Color(\"#222222\");\n\n\/\/ update this with the location you wish to see the air pollution information.\nconst location = \"Bangkok\";\n\n\nconst aqiData = await fetchAQIData(location, \"en\");\n\nif (!aqiData) {\n  console.error(\"unable to continue, data fetched is null.\")\n  return;\n}\n\nconsole.log(aqiData);\nconst stack = airqualityWidget.addStack();\n  stack.centerAlignContent();\n\tstack.layoutVertically();\n  const txt = \"Air Quality in \" + location;\n  const txt1 = stack.addText(txt);\n  txt1.textColor = Color.white();\n  txt1.font = Font.blackRoundedSystemFont(18);\n  stack.addSpacer(10);\n\tconst ratew = stack.addText(aqiData.aqi.impact);\n  switch ( aqiData.aqi.impact ){\n    case \"Good\" :\n    case \"Excellent\" :\n     ratew.textColor = Color.green();\n    console.log(\"message\")\n    break;\n    \n    default:\n     ratew.textColor = Color.red();\n     break;\n  }\n  \n  const formatter = new DateFormatter();\n  formatter.dateFormat = \"yyyy-MM-dd HH:mm:ss\";\n  const dte = stack.addDate(formatter.date(aqiData.aqi.date));\n  dte.font = Font.blackRoundedSystemFont(8);\n  dte.textColor = Color.white();\n  \nconsole.log(aqiData);    \n\n\n\/**\n* fetch the air pollution fata from * aqicn.org\n*\n* @return: the aquicn Json object \n* or null in case of errors\n*\/\nfunction fetchAQIData(city, lang = '') {\n  const url = `https:\/\/feed.aqicn.org\/feed\/${city}\/${lang}\/feed.v1.json`;\n\n  const request = new Request(url);\n  const response = request.loadJSON()\n  .catch(onRejected => {\n  console.error(\"Error fetching AQI data: onRejected\", response);\n\t\treturn null;})\n\n   if (response != undefined) {\n     return response;\n   } else {\n     console.error(\"Error fetching AQI data:\", response)\n\t\t return null;\n   }\n}\n  \nScript.setWidget(airqualityWidget);\nScript.complete();\nairqualityWidget.presentSmall();\n ",
+  "share_sheet_inputs" : [
+
+  ]
+}
